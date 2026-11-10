@@ -1,4 +1,4 @@
-// Vault save ala nfsu2.xyz: export data emulator, enkripsi dengan passphrase
+// Vault save: export data emulator, enkripsi dengan passphrase
 // (PBKDF2 + AES-GCM 256 via Web Crypto), unduh sebagai satu file .vault.
 // Pulihkan: dekripsi lalu importData kembali ke emulator.
 
