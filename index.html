@@ -107,6 +107,15 @@
   .featured .play{align-self:flex-start;margin-top:6px;background:var(--amber-fill);color:#221503;font-weight:800;
     font-size:15px;border-radius:999px;padding:10px 22px;border:1px solid #d98a1f}
 
+  .zone{padding:28px 0 0}
+  .zone h2{font-size:23px;margin:0 0 4px;font-weight:900}
+  .zone p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.6}
+  .art.online{height:auto;aspect-ratio:4/3;padding:0;background:#14100b}
+  .art.online img.thumb{width:100%;height:100%;object-fit:cover;image-rendering:auto;filter:none}
+  .art .ochip{
+    position:absolute;top:10px;right:10px;background:var(--ink);color:#fff;border-radius:999px;
+    font-size:10.5px;font-weight:800;letter-spacing:1px;padding:3px 9px;
+  }
   .empty{
     display:none;background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);
     padding:26px;text-align:center;color:var(--ink-2);font-size:15px;margin-top:18px;
@@ -168,11 +177,15 @@
 <main class="wrap">
   <div class="hero">
     <h1>Game HP jadul,<br />hidup lagi di <span class="hl">browser</span>.</h1>
-    <p>Koleksi game Java era Nokia, dijalankan apa adanya oleh emulator di browser. Tanpa install, tanpa unduh. Pilih genre-nya, baca deskripsinya, klik Main.</p>
+    <p>Dua koleksi dalam satu tempat: game online HTML5 yang langsung main dari servernya, dan game Java era Nokia yang dijalankan apa adanya oleh emulator di browser. Pilih genre-nya, baca deskripsinya, klik Main.</p>
   </div>
 
   <div class="chips" id="chips" role="group" aria-label="Filter genre">
     <button class="chip" data-filter="semua" aria-pressed="true">Semua</button>
+    <button class="chip" data-filter="aksi" aria-pressed="false">Aksi</button>
+    <button class="chip" data-filter="tembak" aria-pressed="false">Tembak-tembakan</button>
+    <button class="chip" data-filter="olahraga" aria-pressed="false">Olahraga</button>
+    <button class="chip" data-filter="io" aria-pressed="false">Game .IO</button>
     <button class="chip" data-filter="petualangan" aria-pressed="false">Petualangan</button>
     <button class="chip" data-filter="arcade" aria-pressed="false">Arcade</button>
     <button class="chip" data-filter="puzzle" aria-pressed="false">Puzzle</button>
@@ -182,6 +195,51 @@
     <button class="chip" data-filter="balapan" aria-pressed="false">Balapan</button>
     <button class="chip" data-filter="papan" aria-pressed="false">Papan</button>
     <button class="chip" data-filter="simulasi" aria-pressed="false">Simulasi</button>
+  </div>
+
+  <div class="zone">
+    <h2>Game Online</h2>
+    <p>Game HTML5 modern, dimainkan lewat embed resmi dari server GameMonetize. Butuh internet, tanpa install. Thumbnail dan deskripsi dari katalog resmi distributornya.</p>
+  </div>
+
+  <section class="genre" data-genre="aksi">
+    <div class="genre-head"><h2>Aksi</h2><span data-count></span></div>
+    <div class="grid" data-online-grid="aksi"></div>
+  </section>
+
+  <section class="genre" data-genre="tembak">
+    <div class="genre-head"><h2>Tembak-tembakan</h2><span data-count></span></div>
+    <div class="grid" data-online-grid="tembak"></div>
+  </section>
+
+  <section class="genre" data-genre="olahraga">
+    <div class="genre-head"><h2>Olahraga</h2><span data-count></span></div>
+    <div class="grid" data-online-grid="olahraga"></div>
+  </section>
+
+  <section class="genre" data-genre="io">
+    <div class="genre-head"><h2>Game .IO</h2><span data-count></span></div>
+    <div class="grid" data-online-grid="io"></div>
+  </section>
+
+  <section class="genre" data-genre="balapan">
+    <div class="genre-head"><h2>Balapan Online</h2><span data-count></span></div>
+    <div class="grid" data-online-grid="balapan"></div>
+  </section>
+
+  <section class="genre" data-genre="puzzle">
+    <div class="genre-head"><h2>Puzzle Online</h2><span data-count></span></div>
+    <div class="grid" data-online-grid="puzzle"></div>
+  </section>
+
+  <section class="genre" data-genre="petualangan">
+    <div class="genre-head"><h2>Petualangan Online</h2><span data-count></span></div>
+    <div class="grid" data-online-grid="petualangan"></div>
+  </section>
+
+  <div class="zone">
+    <h2>Game HP Jadul</h2>
+    <p>Game Java (J2ME) era HP Nokia, dijalankan lokal oleh emulator di browser kamu. Sekali termuat, bisa dimainkan offline dan progresnya tersimpan otomatis.</p>
   </div>
 
   <section class="genre" data-genre="petualangan">
@@ -338,10 +396,12 @@
 <footer>
   <div class="wrap">
     Emulator: FreeJ2ME-web (GPL) berjalan di atas CheerpJ (JVM WebAssembly). Semua proses berjalan lokal di browser, file game tidak diunggah ke server mana pun.<br />
-    12 game tambahan dari proyek terbuka <b>J2ME 100 Games</b> oleh Agneay B Nair dan kontributor (lisensi MIT), dimuat apa adanya. Furby adalah merek Hasbro; Furby Island &copy; Lemon Quest. Koleksi pribadi untuk penggunaan sendiri.
+    12 game tambahan dari proyek terbuka <b>J2ME 100 Games</b> oleh Agneay B Nair dan kontributor (lisensi MIT), dimuat apa adanya. Furby adalah merek Hasbro; Furby Island &copy; Lemon Quest. Koleksi pribadi untuk penggunaan sendiri.<br />
+    Game online berasal dari katalog distributor GameMonetize dan dimainkan lewat program embed resmi mereka; game beserta thumbnail-nya tetap milik developer dan distributor masing-masing, dan berjalan dari server mereka.
   </div>
 </footer>
 
+<script src="online-games.js"></script>
 <script>
   var coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
   if (coarse) {
@@ -349,6 +409,59 @@
       a.href = a.getAttribute("href") + "&mobile=1";
     });
   }
+
+  // Render katalog game online (data: online-games.js, dari feed resmi GameMonetize)
+  (function renderOnline() {
+    if (!window.ONLINE_GAMES) return;
+    var counts = {};
+    window.ONLINE_GAMES.forEach(function (g) {
+      var grid = document.querySelector('[data-online-grid="' + g.g + '"]');
+      if (!grid) return;
+      counts[g.g] = (counts[g.g] || 0) + 1;
+      var href = "play.html?src=" + encodeURIComponent(g.url) +
+                 "&title=" + encodeURIComponent(g.t) +
+                 "&w=" + g.w + "&h=" + g.h;
+      var a = document.createElement("a");
+      a.className = "card play-link";
+      a.href = href;
+      a.setAttribute("data-name", g.t.toLowerCase());
+      a.setAttribute("data-genre", g.g);
+      a.setAttribute("data-desc", (g.d + " " + (g.tags || "") + " online html5").toLowerCase());
+
+      var art = document.createElement("span");
+      art.className = "art online";
+      var img = document.createElement("img");
+      img.className = "thumb";
+      img.src = g.thumb;
+      img.alt = "Thumbnail " + g.t;
+      img.loading = "lazy";
+      var gchip = document.createElement("span");
+      gchip.className = "gchip";
+      gchip.textContent = g.gl;
+      var ochip = document.createElement("span");
+      ochip.className = "ochip";
+      ochip.textContent = "ONLINE";
+      art.appendChild(img); art.appendChild(gchip); art.appendChild(ochip);
+
+      var body = document.createElement("span");
+      body.className = "card-body";
+      var h3 = document.createElement("h3");
+      h3.textContent = g.t;
+      var p = document.createElement("p");
+      p.textContent = g.d;
+      var play = document.createElement("span");
+      play.className = "play";
+      play.textContent = "Main";
+      body.appendChild(h3); body.appendChild(p); body.appendChild(play);
+
+      a.appendChild(art); a.appendChild(body);
+      grid.appendChild(a);
+    });
+    Object.keys(counts).forEach(function (k) {
+      var sec = document.querySelector('section.genre[data-genre="' + k + '"] [data-count]');
+      if (sec) sec.textContent = counts[k] + " game";
+    });
+  })();
 
   var activeGenre = "semua";
   var query = "";

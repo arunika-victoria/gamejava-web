@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Main Game Online, GameJava</title>
+<style>
+  :root{
+    --bg:#f6f3ec; --surface:#ffffff; --ink:#221c14; --ink-2:#6d6151;
+    --line:#e3dac7; --amber-fill:#f0a13a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 20px}
+  .topbar{border-bottom:1px solid var(--line);background:rgba(246,243,236,.9)}
+  .topbar-in{display:flex;align-items:center;gap:14px;padding:12px 0;flex-wrap:wrap}
+  .logo{font-size:19px;font-weight:900;text-decoration:none;color:var(--ink)}
+  .logo em{font-style:normal;color:#b96f0e}
+  h1{font-size:19px;margin:0;font-weight:800;flex:1;min-width:160px}
+  .btn{
+    appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+    font-size:14px;font-weight:700;border-radius:999px;padding:10px 18px;min-height:44px;cursor:pointer;
+    text-decoration:none;display:inline-flex;align-items:center;font-family:inherit;
+  }
+  .btn.primary{background:var(--amber-fill);border-color:#d98a1f;color:#221503}
+  .btn:active{transform:scale(.97)}
+  .stage{
+    margin:18px 0 8px;background:#14100b;border-radius:20px;overflow:hidden;
+    box-shadow:0 10px 30px rgba(60,45,15,.25);
+  }
+  .stage iframe{display:block;width:100%;height:100%;border:0;background:#000}
+  .note{color:var(--ink-2);font-size:13.5px;line-height:1.65;padding-bottom:26px}
+  .err{
+    display:none;margin:18px 0;background:var(--surface);border:1px dashed var(--line);
+    border-radius:18px;padding:22px;font-size:15px;line-height:1.6;color:var(--ink-2);
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="logo" href="./">Game<em>Java</em></a>
+    <h1 id="title">Game Online</h1>
+    <a class="btn" href="./">&larr; Semua Game</a>
+    <button class="btn primary" id="fsBtn" type="button">Layar Penuh</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="stage" id="stage"></div>
+  <div class="err" id="err">Alamat game tidak valid. Balik ke <a href="./">beranda</a> dan pilih game dari katalog.</div>
+  <p class="note">Game online dimainkan lewat embed resmi dari server GameMonetize, jadi butuh koneksi internet dan tidak memakai save vault situs ini. Kontrol tiap game dijelaskan di dalam gamenya, umumnya mouse/sentuh dan WASD atau tombol panah.</p>
+</main>
+
+<script>
+  var q = new URLSearchParams(location.search);
+  var src = q.get("src") || "";
+  var title = q.get("title") || "Game Online";
+  var w = parseInt(q.get("w"), 10) || 800;
+  var h = parseInt(q.get("h"), 10) || 600;
+
+  document.getElementById("title").textContent = title;
+  document.title = title + " — GameJava";
+
+  var ok = false;
+  try {
+    var u = new URL(src);
+    ok = u.protocol === "https:" && /(^|\.)gamemonetize\.co(m)?$/.test(u.hostname);
+  } catch (e) { ok = false; }
+
+  var stage = document.getElementById("stage");
+  if (ok) {
+    stage.style.aspectRatio = w + " / " + h;
+    var f = document.createElement("iframe");
+    f.src = src;
+    f.setAttribute("allowfullscreen", "");
+    f.setAttribute("allow", "autoplay; fullscreen; gamepad");
+    f.setAttribute("scrolling", "no");
+    f.title = title;
+    stage.appendChild(f);
+  } else {
+    stage.style.display = "none";
+    document.getElementById("err").style.display = "block";
+  }
+
+  document.getElementById("fsBtn").addEventListener("click", function () {
+    if (stage.requestFullscreen) stage.requestFullscreen();
+  });
+</script>
+</body>
+</html>
