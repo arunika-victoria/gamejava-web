@@ -107,6 +107,17 @@
   .featured .play{align-self:flex-start;margin-top:6px;background:var(--amber-fill);color:#221503;font-weight:800;
     font-size:15px;border-radius:999px;padding:10px 22px;border:1px solid #d98a1f}
 
+  .viewrow{display:flex;align-items:center;gap:10px;padding-top:16px}
+  .viewrow .lbl{font-size:13px;font-weight:700;color:var(--ink-2)}
+  .seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+  .seg button{
+    border:none;background:none;font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ink-2);
+    border-radius:999px;padding:7px 16px;min-height:38px;cursor:pointer;
+  }
+  .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .grid.dense{grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:12px}
+  .art.cover{padding:0;background:#14100b}
+  .art.cover img{width:100%;height:100%;object-fit:cover;image-rendering:auto;filter:none}
   .zone{padding:28px 0 0}
   .zone h2{font-size:23px;margin:0 0 4px;font-weight:900}
   .zone p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.6}
@@ -197,6 +208,15 @@
     <button class="chip" data-filter="simulasi" aria-pressed="false">Simulasi</button>
   </div>
 
+  <div class="viewrow">
+    <span class="lbl">Tampilan:</span>
+    <span class="seg" role="group" aria-label="Pilih tampilan katalog">
+      <button type="button" id="viewGrouped" aria-pressed="true">Per Genre</button>
+      <button type="button" id="viewGrid" aria-pressed="false">Full Grid</button>
+    </span>
+  </div>
+
+  <div id="groupedView">
   <div class="zone">
     <h2>Game Online</h2>
     <p>Game HTML5 modern, dimainkan lewat embed resmi dari server GameMonetize. Butuh internet, tanpa install. Thumbnail dan deskripsi dari katalog resmi distributornya.</p>
@@ -351,6 +371,12 @@
       </a>
     </div>
   </section>
+  </div><!-- /groupedView -->
+
+  <section class="genre" id="gridView" style="display:none">
+    <div class="genre-head"><h2>Semua Game</h2><span id="gridCount"></span></div>
+    <div class="grid dense" id="allGrid"></div>
+  </section>
 
   <div class="empty" id="empty">Tidak ada game yang cocok dengan pencarian itu. Coba kata lain, mis. &ldquo;ular&rdquo;, &ldquo;catur&rdquo;, atau &ldquo;balap&rdquo;.</div>
 
@@ -463,30 +489,104 @@
     });
   })();
 
+  // Full grid: satu grid berisi semua game (klon dari tampilan per genre)
+  (function buildFullGrid() {
+    var grid = document.getElementById("allGrid");
+    var src = document.querySelectorAll("#groupedView .play-link");
+    src.forEach(function (card) {
+      var clone;
+      if (card.classList.contains("featured")) {
+        clone = document.createElement("a");
+        clone.className = "card play-link";
+        clone.href = card.getAttribute("href");
+        clone.setAttribute("data-name", card.getAttribute("data-name"));
+        clone.setAttribute("data-genre", card.getAttribute("data-genre"));
+        clone.setAttribute("data-desc", card.getAttribute("data-desc") || "");
+        var art = document.createElement("span");
+        art.className = "art cover";
+        art.style.aspectRatio = "4 / 3";
+        var img = document.createElement("img");
+        img.src = "assets/furby-cover.png";
+        img.alt = "Cover Furby Island";
+        img.loading = "lazy";
+        var chip = document.createElement("span");
+        chip.className = "gchip";
+        chip.textContent = "Petualangan";
+        art.appendChild(img); art.appendChild(chip);
+        var body = document.createElement("span");
+        body.className = "card-body";
+        var h3 = document.createElement("h3");
+        h3.textContent = "Furby Island";
+        var p = document.createElement("p");
+        p.textContent = "Adventure santai di pulau tropis: jelajahi pulau, kumpulkan bulu dan perlengkapan, lalu bantu para Furby menyiapkan pesta besar.";
+        var play = document.createElement("span");
+        play.className = "play";
+        play.textContent = "Main";
+        body.appendChild(h3); body.appendChild(p); body.appendChild(play);
+        clone.appendChild(art); clone.appendChild(body);
+      } else {
+        clone = card.cloneNode(true);
+      }
+      grid.appendChild(clone);
+    });
+    document.getElementById("gridCount").textContent = src.length + " game";
+  })();
+
   var activeGenre = "semua";
   var query = "";
-  var sections = Array.prototype.slice.call(document.querySelectorAll("section.genre[data-genre]"));
-  var cards = Array.prototype.slice.call(document.querySelectorAll(".play-link"));
+  var viewMode = "grouped";
+  var sections = Array.prototype.slice.call(document.querySelectorAll("#groupedView section.genre[data-genre]"));
+  var groupedCards = Array.prototype.slice.call(document.querySelectorAll("#groupedView .play-link"));
+  var gridCards = Array.prototype.slice.call(document.querySelectorAll("#allGrid .play-link"));
   var emptyEl = document.getElementById("empty");
+
+  function cardMatches(card) {
+    var hay = (card.getAttribute("data-name") + " " + card.getAttribute("data-genre") + " " + (card.getAttribute("data-desc") || "")).toLowerCase();
+    var okGenre = activeGenre === "semua" || card.getAttribute("data-genre") === activeGenre;
+    var okQuery = !query || hay.indexOf(query) !== -1;
+    return okGenre && okQuery;
+  }
 
   function applyFilter() {
     var visibleTotal = 0;
-    cards.forEach(function (card) {
-      var hay = (card.getAttribute("data-name") + " " + card.getAttribute("data-genre") + " " + (card.getAttribute("data-desc") || "")).toLowerCase();
-      var okGenre = activeGenre === "semua" || card.getAttribute("data-genre") === activeGenre;
-      var okQuery = !query || hay.indexOf(query) !== -1;
-      var show = okGenre && okQuery;
-      card.style.display = show ? "" : "none";
-      if (show) visibleTotal++;
-    });
-    sections.forEach(function (sec) {
-      var any = Array.prototype.some.call(sec.querySelectorAll(".play-link"), function (c) {
-        return c.style.display !== "none";
+    if (viewMode === "grid") {
+      gridCards.forEach(function (card) {
+        var show = cardMatches(card);
+        card.style.display = show ? "" : "none";
+        if (show) visibleTotal++;
       });
-      sec.style.display = any ? "" : "none";
-    });
+    } else {
+      groupedCards.forEach(function (card) {
+        var show = cardMatches(card);
+        card.style.display = show ? "" : "none";
+        if (show) visibleTotal++;
+      });
+      sections.forEach(function (sec) {
+        var any = Array.prototype.some.call(sec.querySelectorAll(".play-link"), function (c) {
+          return c.style.display !== "none";
+        });
+        sec.style.display = any ? "" : "none";
+      });
+      var zoneStates = [], cur = null;
+      Array.prototype.forEach.call(document.getElementById("groupedView").children, function (el) {
+        if (el.classList.contains("zone")) { cur = { zone: el, any: false }; zoneStates.push(cur); }
+        else if (el.tagName === "SECTION" && cur && el.style.display !== "none") { cur.any = true; }
+      });
+      zoneStates.forEach(function (z) { z.zone.style.display = z.any ? "" : "none"; });
+    }
     emptyEl.style.display = visibleTotal === 0 ? "block" : "none";
   }
+
+  function setView(mode) {
+    viewMode = mode;
+    document.getElementById("groupedView").style.display = mode === "grouped" ? "" : "none";
+    document.getElementById("gridView").style.display = mode === "grid" ? "" : "none";
+    document.getElementById("viewGrouped").setAttribute("aria-pressed", mode === "grouped" ? "true" : "false");
+    document.getElementById("viewGrid").setAttribute("aria-pressed", mode === "grid" ? "true" : "false");
+    applyFilter();
+  }
+  document.getElementById("viewGrouped").addEventListener("click", function () { setView("grouped"); });
+  document.getElementById("viewGrid").addEventListener("click", function () { setView("grid"); });
 
   document.getElementById("chips").addEventListener("click", function (e) {
     var btn = e.target.closest(".chip");
