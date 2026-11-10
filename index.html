@@ -3,169 +3,303 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Game Java, Main di Browser</title>
-<meta name="description" content="Koleksi game Java HP jadul yang bisa dimainkan langsung di browser, tanpa install." />
+<title>GameJava, Main Game Java Jadul di Browser</title>
+<meta name="description" content="Koleksi game Java HP jadul yang bisa dimainkan langsung di browser, tanpa install. Lengkap dengan genre dan deskripsi tiap game." />
 <style>
   :root{
-    --bg:#12100d;
-    --panel:#1d1915;
-    --panel-2:#28211a;
-    --line:#3a3128;
-    --text:#f5ecdb;
-    --muted:#bfae8f;
-    --amber:#f0a13a;
-    --amber-dark:#c67f1d;
-    --ink:#221503;
+    --bg:#f6f3ec;
+    --surface:#ffffff;
+    --surface-2:#efe9db;
+    --ink:#221c14;
+    --ink-2:#6d6151;
+    --line:#e3dac7;
+    --amber:#b96f0e;
+    --amber-fill:#f0a13a;
+    --amber-dark:#8a5205;
+    --radius:22px;
+    --shadow:0 1px 2px rgba(60,45,15,.06), 0 6px 18px rgba(60,45,15,.07);
+    --shadow-hover:0 2px 4px rgba(60,45,15,.08), 0 12px 28px rgba(60,45,15,.13);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    background:var(--bg);color:var(--text);
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    min-height:100vh;
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  /* ---------- top bar (Material 3 style) ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;background:rgba(246,243,236,.88);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
   }
-  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  .topbar-in{display:flex;align-items:center;gap:16px;padding:12px 0}
+  .logo{font-size:20px;font-weight:900;letter-spacing:.2px;text-decoration:none;color:var(--ink);white-space:nowrap}
+  .logo em{font-style:normal;color:var(--amber)}
+  .search{
+    flex:1;max-width:520px;display:flex;align-items:center;gap:8px;background:var(--surface);
+    border:1px solid var(--line);border-radius:999px;padding:0 16px;height:44px;box-shadow:var(--shadow);
+  }
+  .search svg{flex:0 0 auto;opacity:.55}
+  .search input{border:none;outline:none;background:none;font-size:15px;width:100%;color:var(--ink);font-family:inherit}
+  .top-actions{margin-left:auto;display:flex;gap:8px}
+  .tbtn{
+    text-decoration:none;color:var(--ink);font-size:14px;font-weight:600;background:var(--surface);
+    border:1px solid var(--line);border-radius:999px;padding:10px 16px;min-height:44px;display:inline-flex;align-items:center;
+  }
+  .tbtn:active{transform:scale(.97)}
 
   /* ---------- hero ---------- */
-  .hero{
-    position:relative;overflow:hidden;
-    border-bottom:1px solid var(--line);
-    background:
-      radial-gradient(560px 300px at 85% -60px, rgba(240,161,58,.20), rgba(240,161,58,0) 70%),
-      linear-gradient(180deg,#191510 0%, #12100d 100%);
-  }
-  .hero-inner{padding:44px 0 38px;position:relative}
-  .brand{font-size:15px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber)}
-  .hero h1{
-    font-size:clamp(30px,6vw,50px);line-height:1.08;margin:14px 0 12px;font-weight:900;max-width:640px;
-  }
+  .hero{padding:34px 0 6px}
+  .hero h1{font-size:clamp(27px,5vw,42px);line-height:1.12;margin:0 0 10px;font-weight:900;letter-spacing:-.5px}
   .hero h1 .hl{color:var(--amber)}
-  .hero p{color:var(--muted);font-size:16px;line-height:1.65;max-width:560px;margin:0 0 22px}
-  .hero .cta{
-    display:inline-block;background:var(--amber);color:var(--ink);text-decoration:none;
-    font-weight:800;font-size:16px;padding:13px 24px;border-radius:10px;border:1px solid var(--amber-dark);
+  .hero p{color:var(--ink-2);font-size:16px;line-height:1.6;margin:0;max-width:600px}
+
+  /* ---------- chips ---------- */
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:18px 0 4px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+    font-size:14px;font-weight:600;border-radius:999px;padding:9px 16px;min-height:40px;font-family:inherit;
   }
-  .hero .cta:active{transform:scale(.98)}
-  .hero .sub{margin-left:14px;color:var(--muted);font-size:13.5px}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip:active{transform:scale(.97)}
 
-  /* ---------- sections ---------- */
-  section.block{padding:30px 0 6px}
-  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
-  .sec-head h2{font-size:19px;margin:0;font-weight:800}
-  .sec-head span{color:var(--muted);font-size:13px}
-
+  /* ---------- genre sections & cards ---------- */
+  section.genre{padding:22px 0 2px}
+  .genre-head{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+  .genre-head h2{font-size:20px;margin:0;font-weight:800}
+  .genre-head span{color:var(--ink-2);font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
   .card{
-    background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;
-    display:flex;
+    background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
+    text-decoration:none;color:var(--ink);display:flex;flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
   }
-  .cover-frame{
-    flex:0 0 216px;background:#000;display:flex;align-items:stretch;justify-content:center;
-    border-right:1px solid var(--line);
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+  .card:active{transform:scale(.99)}
+  .art{height:128px;display:flex;align-items:center;justify-content:center;position:relative}
+  .art img{width:84px;height:84px;image-rendering:pixelated;filter:drop-shadow(0 6px 10px rgba(60,45,15,.25))}
+  .art .gchip{
+    position:absolute;top:10px;left:10px;background:rgba(255,255,255,.82);border-radius:999px;
+    font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:3px 9px;color:var(--ink);
   }
-  .cover-frame img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated}
-  .card-body{padding:22px;flex:1;min-width:0}
-  .badge{
-    display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
-    color:var(--amber);border:1px solid var(--amber-dark);border-radius:999px;padding:3px 10px;margin-bottom:10px;
+  .card-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .card h3{margin:0;font-size:17px;font-weight:800}
+  .card p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-2);flex:1}
+  .card .play{
+    margin-top:8px;align-self:flex-start;background:var(--amber-fill);color:#221503;font-weight:800;font-size:14px;
+    border-radius:999px;padding:8px 18px;border:1px solid #d98a1f;
   }
-  .card h3{font-size:25px;margin:0 0 6px}
-  .meta{color:var(--muted);font-size:13px;line-height:1.7;margin:0 0 12px}
-  .meta b{color:var(--text);font-weight:600}
-  .desc{font-size:14.5px;line-height:1.65;margin:0 0 18px;color:#eadfc6}
-  .actions{display:flex;gap:10px;flex-wrap:wrap}
-  .btn{
-    display:inline-block;text-decoration:none;cursor:pointer;border-radius:9px;padding:12px 18px;
-    font-size:15px;font-weight:700;border:1px solid var(--line);color:var(--text);background:var(--panel-2);min-height:44px;
-  }
-  .btn:active{transform:scale(.98)}
-  .btn.primary{background:var(--amber);border-color:var(--amber-dark);color:var(--ink)}
 
-  .tile{
-    margin-top:14px;border:1px dashed var(--line);border-radius:16px;padding:18px 22px;
-    display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(255,255,255,.015);
+  /* featured (Furby) */
+  .featured{
+    display:flex;background:var(--surface);border-radius:26px;box-shadow:var(--shadow);overflow:hidden;
+    text-decoration:none;color:var(--ink);transition:transform .15s ease, box-shadow .15s ease;
   }
-  .tile p{margin:0;font-size:14px;color:var(--muted);line-height:1.6;flex:1;min-width:220px}
-  .tile p b{color:var(--text)}
+  .featured:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+  .featured .cover{flex:0 0 230px;background:#000}
+  .featured .cover img{width:100%;height:100%;object-fit:cover;display:block}
+  .featured .fbody{padding:22px 24px;display:flex;flex-direction:column;gap:8px}
+  .featured .tag{align-self:flex-start;background:var(--ink);color:#fff;font-size:11px;font-weight:800;
+    letter-spacing:1.2px;text-transform:uppercase;border-radius:999px;padding:4px 11px}
+  .featured h3{margin:0;font-size:24px;font-weight:900}
+  .featured .meta{color:var(--ink-2);font-size:13px;line-height:1.6}
+  .featured p{margin:0;font-size:14.5px;line-height:1.65;color:#4c4232;max-width:520px}
+  .featured .play{align-self:flex-start;margin-top:6px;background:var(--amber-fill);color:#221503;font-weight:800;
+    font-size:15px;border-radius:999px;padding:10px 22px;border:1px solid #d98a1f}
 
-  /* ---------- guide ---------- */
-  .guide{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .gpanel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
-  .gpanel h3{margin:0 0 4px;font-size:16px}
-  .gpanel .hint{color:var(--muted);font-size:13px;margin:0 0 14px;line-height:1.6}
+  .empty{
+    display:none;background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);
+    padding:26px;text-align:center;color:var(--ink-2);font-size:15px;margin-top:18px;
+  }
+
+  /* ---------- guide & save ---------- */
+  .panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .panel{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px}
+  .panel h3{margin:0 0 4px;font-size:16px;font-weight:800}
+  .panel .hint{color:var(--ink-2);font-size:13px;margin:0 0 12px;line-height:1.6}
   table.keys{width:100%;border-collapse:collapse;font-size:14px}
-  table.keys td{padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top}
+  table.keys td{padding:7px 0;border-bottom:1px solid #f0ead9;vertical-align:top}
   table.keys tr:last-child td{border-bottom:none}
-  table.keys td.k{width:44%;white-space:nowrap}
-  table.keys td.d{color:var(--muted);line-height:1.5}
-  kbd{
-    display:inline-block;background:var(--panel-2);border:1px solid var(--line);border-bottom-width:2px;
-    border-radius:6px;padding:1px 7px;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--text);
-  }
-  ul.touch{margin:0;padding-left:18px;font-size:14px;line-height:1.75;color:#eadfc6}
+  table.keys td.k{width:42%;white-space:nowrap}
+  table.keys td.d{color:var(--ink-2);line-height:1.5}
+  kbd{display:inline-block;background:var(--surface-2);border:1px solid var(--line);border-bottom-width:2px;
+    border-radius:6px;padding:1px 7px;font-size:12.5px;font-weight:700}
+  ul.touch{margin:0;padding-left:18px;font-size:14px;line-height:1.75;color:#4c4232}
   ul.touch li::marker{color:var(--amber)}
-
-  /* ---------- save ---------- */
-  .savebox{
-    background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;
-    font-size:14.5px;line-height:1.7;color:#eadfc6;
+  .savebox{background:var(--ink);color:#f5ecdb;border-radius:var(--radius);padding:22px 24px;margin-top:16px}
+  .savebox h3{margin:0 0 6px;font-size:16px;color:var(--amber-fill)}
+  .savebox p{margin:0;font-size:14.5px;line-height:1.7}
+  .savebox .btn{
+    display:inline-block;margin-top:14px;background:var(--amber-fill);color:#221503;text-decoration:none;
+    font-weight:800;font-size:14px;border-radius:999px;padding:10px 20px;min-height:44px;
   }
-  .savebox h3{font-size:16px;margin:0 0 6px;color:var(--amber)}
-  .savebox p{margin:0}
-  .savebox .row{margin-top:14px}
-  .btn.small{padding:9px 14px;font-size:14px}
 
-  footer{padding:26px 0 30px;color:var(--muted);font-size:12px;line-height:1.7}
+  footer{padding:30px 0 34px;color:var(--ink-2);font-size:12.5px;line-height:1.75}
 
-  @media (max-width:640px){
-    .card{flex-direction:column}
-    .cover-frame{flex:none;border-right:none;border-bottom:1px solid var(--line)}
-    .cover-frame img{height:230px}
-    .guide{grid-template-columns:1fr}
-    .hero .sub{display:block;margin:10px 0 0}
+  @media (max-width:680px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+    .art{height:104px}
+    .art img{width:64px;height:64px}
+    .featured{flex-direction:column}
+    .featured .cover{flex:none;height:210px}
+    .featured .cover img{height:210px}
+    .panel-grid{grid-template-columns:1fr}
+    .top-actions .tbtn{padding:10px 12px}
+    .hide-sm{display:none}
   }
 </style>
 </head>
 <body>
 
-<header class="hero">
-  <div class="wrap hero-inner">
-    <div class="brand">GameJava</div>
-    <h1>Game HP jadul,<br />hidup lagi di <span class="hl">browser</span>.</h1>
-    <p>Koleksi game Java era Nokia yang dijalankan apa adanya oleh emulator di dalam browser. Tanpa install, tanpa unduh, tinggal klik dan main, lengkap dengan tombol sentuh di HP dan keyboard di PC.</p>
-    <a class="cta" href="#koleksi">Lihat Koleksi</a>
-    <span class="sub">Gratis, berjalan lokal di perangkatmu.</span>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="logo" href="./">Game<em>Java</em></a>
+    <label class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#221c14" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+      <input id="search" type="search" placeholder="Cari game, mis. ular, catur, balap" autocomplete="off" />
+    </label>
+    <nav class="top-actions">
+      <a class="tbtn hide-sm" href="vault.html">Vault Save</a>
+      <a class="tbtn" href="launcher.html">Kelola</a>
+    </nav>
   </div>
 </header>
 
 <main class="wrap">
+  <div class="hero">
+    <h1>Game HP jadul,<br />hidup lagi di <span class="hl">browser</span>.</h1>
+    <p>Koleksi game Java era Nokia, dijalankan apa adanya oleh emulator di browser. Tanpa install, tanpa unduh. Pilih genre-nya, baca deskripsinya, klik Main.</p>
+  </div>
 
-  <section class="block" id="koleksi">
-    <div class="sec-head"><h2>Koleksi</h2><span>klik Main, langsung jalan</span></div>
+  <div class="chips" id="chips" role="group" aria-label="Filter genre">
+    <button class="chip" data-filter="semua" aria-pressed="true">Semua</button>
+    <button class="chip" data-filter="petualangan" aria-pressed="false">Petualangan</button>
+    <button class="chip" data-filter="arcade" aria-pressed="false">Arcade</button>
+    <button class="chip" data-filter="puzzle" aria-pressed="false">Puzzle</button>
+    <button class="chip" data-filter="rpg" aria-pressed="false">RPG</button>
+    <button class="chip" data-filter="strategi" aria-pressed="false">Strategi</button>
+    <button class="chip" data-filter="platformer" aria-pressed="false">Platformer</button>
+    <button class="chip" data-filter="balapan" aria-pressed="false">Balapan</button>
+    <button class="chip" data-filter="papan" aria-pressed="false">Papan</button>
+    <button class="chip" data-filter="simulasi" aria-pressed="false">Simulasi</button>
+  </div>
 
-    <article class="card">
-      <div class="cover-frame"><img src="assets/furby-cover.png" alt="Cover Furby Island" /></div>
-      <div class="card-body">
-        <span class="badge">Siap Main</span>
+  <section class="genre" data-genre="petualangan">
+    <div class="genre-head"><h2>Petualangan</h2><span>1 game</span></div>
+    <a class="featured play-link" href="run.html?app=furbyisland" data-name="furby island" data-genre="petualangan" data-desc="adventure pulau tropis lemon quest pesta">
+      <span class="cover"><img src="assets/furby-cover.png" alt="Cover Furby Island" /></span>
+      <span class="fbody">
+        <span class="tag">Unggulan</span>
         <h3>Furby Island</h3>
-        <p class="meta"><b>Lemon Quest</b> &middot; 2008 &middot; MIDP 2.0 / CLDC 1.0 &middot; Layar 240&times;320 &middot; Musik MIDI &middot; Bahasa Inggris</p>
-        <p class="desc">Adventure santai di pulau tropis: jelajahi pulau, kumpulkan bulu dan perlengkapan, lalu bantu para Furby menyiapkan pesta besar. Ini file game Java aslinya, bukan remake.</p>
-        <div class="actions">
-          <a class="btn primary" id="play-btn" href="run.html?app=furbyisland">Main Sekarang</a>
-          <a class="btn" href="#panduan">Panduan Main</a>
-        </div>
-      </div>
-    </article>
+        <span class="meta">Lemon Quest &middot; 2008 &middot; Layar 240&times;320 &middot; Musik MIDI &middot; Bahasa Inggris</span>
+        <p>Adventure santai di pulau tropis: jelajahi pulau, kumpulkan bulu dan perlengkapan, lalu bantu para Furby menyiapkan pesta besar. Ini file game Java aslinya, bukan remake.</p>
+        <span class="play">Main Sekarang</span>
+      </span>
+    </a>
+  </section>
 
-    <div class="tile">
-      <p><b>Punya file .jar game Java lain?</b> Tambahkan sendiri ke koleksi lewat pengelola, atur ukuran layarnya, langsung bisa dimainkan dari sini.</p>
-      <a class="btn" href="launcher.html">Kelola Koleksi</a>
+  <section class="genre" data-genre="arcade">
+    <div class="genre-head"><h2>Arcade</h2><span>2 game</span></div>
+    <div class="grid">
+      <a class="card play-link" href="run.html?app=retrosnake" data-name="retro snake" data-genre="arcade" data-desc="ular apel ekor snake klasik">
+        <span class="art" style="background:#ffe9e2"><span class="gchip">Arcade</span><img src="assets/icons/retrosnake.png" alt="Ikon Retro Snake" /></span>
+        <span class="card-body"><h3>Retro Snake</h3><p>Kendalikan ular yang makin panjang, makan apel sebanyak-banyaknya, dan jangan sampai menggigit ekor sendiri.</p><span class="play">Main</span></span>
+      </a>
+      <a class="card play-link" href="run.html?app=brickbuster" data-name="brick buster" data-genre="arcade" data-desc="bola paddle bata breakout power-up">
+        <span class="art" style="background:#ffe9e2"><span class="gchip">Arcade</span><img src="assets/icons/brickbuster.png" alt="Ikon Brick Buster" /></span>
+        <span class="card-body"><h3>Brick Buster</h3><p>Pantulkan bola dengan paddle untuk menghancurkan delapan dinding bata, sambil menangkap kapsul power-up.</p><span class="play">Main</span></span>
+      </a>
     </div>
   </section>
 
-  <section class="block" id="panduan">
-    <div class="sec-head"><h2>Panduan Main</h2><span>di HP maupun PC</span></div>
-    <div class="guide">
-      <div class="gpanel">
+  <section class="genre" data-genre="puzzle">
+    <div class="genre-head"><h2>Puzzle</h2><span>3 game</span></div>
+    <div class="grid">
+      <a class="card play-link" href="run.html?app=blockfall" data-name="block fall" data-genre="puzzle" data-desc="balok jatuh baris tetris marathon sprint">
+        <span class="art" style="background:#fdf3d0"><span class="gchip">Puzzle</span><img src="assets/icons/blockfall.png" alt="Ikon Block Fall" /></span>
+        <span class="card-body"><h3>Block Fall</h3><p>Putar dan jatuhkan balok empat kotak untuk membersihkan baris. Mode Marathon tanpa akhir atau Sprint 40 baris.</p><span class="play">Main</span></span>
+      </a>
+      <a class="card play-link" href="run.html?app=minesweep" data-name="mine sweep" data-genre="puzzle" data-desc="ranjau angka kotak aman minesweeper logika">
+        <span class="art" style="background:#fdf3d0"><span class="gchip">Puzzle</span><img src="assets/icons/minesweep.png" alt="Ikon Mine Sweep" /></span>
+        <span class="card-body"><h3>Mine Sweep</h3><p>Baca angka petunjuk di setiap kotak, buka semua kotak yang aman, dan jangan sampai menginjak ranjau.</p><span class="play">Main</span></span>
+      </a>
+      <a class="card play-link" href="run.html?app=tilemerge" data-name="tile merge" data-genre="puzzle" data-desc="ubin angka gabung 2048 geser">
+        <span class="art" style="background:#fdf3d0"><span class="gchip">Puzzle</span><img src="assets/icons/tilemerge.png" alt="Ikon Tile Merge" /></span>
+        <span class="card-body"><h3>Tile Merge</h3><p>Geser ubin-ubin angka dan gabungkan pasangan yang sama sampai terbentuk ubin target.</p><span class="play">Main</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="genre" data-genre="rpg">
+    <div class="genre-head"><h2>RPG</h2><span>2 game</span></div>
+    <div class="grid">
+      <a class="card play-link" href="run.html?app=dungeonquest" data-name="dungeon quest" data-genre="rpg" data-desc="roguelike dungeon lantai naga level">
+        <span class="art" style="background:#e4efda"><span class="gchip">RPG</span><img src="assets/icons/dungeonquest.png" alt="Ikon Dungeon Quest" /></span>
+        <span class="card-body"><h3>Dungeon Quest</h3><p>Roguelike saku: jelajahi sepuluh lantai dungeon yang dibuat acak, naik level, dan kalahkan naga di lantai terbawah.</p><span class="play">Main</span></span>
+      </a>
+      <a class="card play-link" href="run.html?app=monsterduel" data-name="monster duel" data-genre="rpg" data-desc="monster partner pelatih duel elemen turn-based">
+        <span class="art" style="background:#e4efda"><span class="gchip">RPG</span><img src="assets/icons/monsterduel.png" alt="Ikon Monster Duel" /></span>
+        <span class="card-body"><h3>Monster Duel</h3><p>Pelihara monster partner dan kalahkan delapan pelatih dalam duel bergiliran berbasis elemen.</p><span class="play">Main</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="genre" data-genre="strategi">
+    <div class="genre-head"><h2>Strategi</h2><span>1 game</span></div>
+    <div class="grid">
+      <a class="card play-link" href="run.html?app=towerguard" data-name="tower guard" data-genre="strategi" data-desc="menara tower defense gelombang monster panah meriam es">
+        <span class="art" style="background:#fbe4ec"><span class="gchip">Strategi</span><img src="assets/icons/towerguard.png" alt="Ikon Tower Guard" /></span>
+        <span class="card-body"><h3>Tower Guard</h3><p>Bangun dan tingkatkan menara Panah, Meriam, dan Es di sepanjang jalan untuk menahan 20 gelombang monster.</p><span class="play">Main</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="genre" data-genre="platformer">
+    <div class="genre-head"><h2>Platformer</h2><span>1 game</span></div>
+    <div class="grid">
+      <a class="card play-link" href="run.html?app=pixeljumper" data-name="pixel jumper" data-genre="platformer" data-desc="lari lompat level lubang duri pegas mario">
+        <span class="art" style="background:#dcf0e2"><span class="gchip">Platformer</span><img src="assets/icons/pixeljumper.png" alt="Ikon Pixel Jumper" /></span>
+        <span class="card-body"><h3>Pixel Jumper</h3><p>Lari, lompat, dan injak musuh melewati delapan level berisi lubang, duri, pegas, dan monster berjalan.</p><span class="play">Main</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="genre" data-genre="balapan">
+    <div class="genre-head"><h2>Balapan</h2><span>1 game</span></div>
+    <div class="grid">
+      <a class="card play-link" href="run.html?app=motorush" data-name="moto rush" data-genre="balapan" data-desc="motor balap jalan raya waktu pseudo 3d racing">
+        <span class="art" style="background:#ffeeda"><span class="gchip">Balapan</span><img src="assets/icons/motorush.png" alt="Ikon Moto Rush" /></span>
+        <span class="card-body"><h3>Moto Rush</h3><p>Balap motor pseudo-3D menyusuri jalan raya yang berkelok dan berbukit, melawan waktu.</p><span class="play">Main</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="genre" data-genre="papan">
+    <div class="genre-head"><h2>Papan</h2><span>1 game</span></div>
+    <div class="grid">
+      <a class="card play-link" href="run.html?app=keypadchess" data-name="keypad chess" data-genre="papan" data-desc="catur chess ai papan strategi bidak">
+        <span class="art" style="background:#f0e7d3"><span class="gchip">Papan</span><img src="assets/icons/keypadchess.png" alt="Ikon Keypad Chess" /></span>
+        <span class="card-body"><h3>Keypad Chess</h3><p>Catur aturan penuh melawan AI dengan tiga tingkat kekuatan, dimainkan sepenuhnya dari keypad.</p><span class="play">Main</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="genre" data-genre="simulasi">
+    <div class="genre-head"><h2>Simulasi</h2><span>1 game</span></div>
+    <div class="grid">
+      <a class="card play-link" href="run.html?app=pocketfarm" data-name="pocket farm" data-genre="simulasi" data-desc="bertani lahan tanam siram panen musim uang">
+        <span class="art" style="background:#e6f2cf"><span class="gchip">Simulasi</span><img src="assets/icons/pocketfarm.png" alt="Ikon Pocket Farm" /></span>
+        <span class="card-body"><h3>Pocket Farm</h3><p>Garap 30 petak lahan: bajak, tanam, siram, dan panen. Kumpulkan $1000 sebelum musim 28 hari berakhir.</p><span class="play">Main</span></span>
+      </a>
+    </div>
+  </section>
+
+  <div class="empty" id="empty">Tidak ada game yang cocok dengan pencarian itu. Coba kata lain, mis. &ldquo;ular&rdquo;, &ldquo;catur&rdquo;, atau &ldquo;balap&rdquo;.</div>
+
+  <section class="genre" id="panduan">
+    <div class="genre-head"><h2>Panduan Main</h2><span>di PC maupun HP</span></div>
+    <div class="panel-grid">
+      <div class="panel">
         <h3>Di PC, pakai keyboard</h3>
         <p class="hint">Klik dulu layar gamenya sekali supaya keyboard fokus ke game, lalu pakai tombol berikut:</p>
         <table class="keys">
@@ -177,9 +311,9 @@
           <tr><td class="k"><kbd>E</kbd> &middot; <kbd>R</kbd></td><td class="d">Tombol * dan #</td></tr>
           <tr><td class="k"><kbd>Esc</kbd></td><td class="d">Menu opsi emulator: ukuran layar, suara, tipe HP, mulai ulang</td></tr>
         </table>
-        <p class="hint" style="margin-top:12px">Layar game juga bisa diklik dengan mouse, berguna untuk game yang mendukung sentuhan. Loading pertama lebih lama karena mesin emulatornya diunduh dulu; berikutnya jauh lebih cepat.</p>
+        <p class="hint" style="margin-top:12px">Layar game juga bisa diklik dengan mouse. Loading pertama lebih lama karena mesin emulatornya diunduh dulu; berikutnya jauh lebih cepat.</p>
       </div>
-      <div class="gpanel">
+      <div class="panel">
         <h3>Di HP, pakai layar sentuh</h3>
         <p class="hint">Keypad virtual muncul otomatis di bawah dan samping layar game:</p>
         <ul class="touch">
@@ -192,30 +326,69 @@
         <p class="hint" style="margin-top:12px">Putar HP ke posisi tegak (portrait) untuk tampilan keypad paling nyaman.</p>
       </div>
     </div>
-  </section>
 
-  <section class="block">
     <div class="savebox">
       <h3>Save otomatis + vault cadangan</h3>
       <p>Progres tersimpan <b>otomatis</b> di penyimpanan persisten browser perangkat ini, jadi menutup tab tidak menghapus save. Mau pindah HP atau browser? Buat <b>file vault</b>: seluruh data save dibungkus jadi satu file terenkripsi passphrase, bisa disimpan di mana saja dan dipulihkan di perangkat lain dengan passphrase yang sama.</p>
-      <div class="row"><a class="btn small" href="vault.html">Backup / Pulihkan Save</a></div>
+      <a class="btn" href="vault.html">Backup / Pulihkan Save</a>
     </div>
   </section>
-
 </main>
 
 <footer>
   <div class="wrap">
     Emulator: FreeJ2ME-web (GPL) berjalan di atas CheerpJ (JVM WebAssembly). Semua proses berjalan lokal di browser, file game tidak diunggah ke server mana pun.<br />
-    Koleksi pribadi untuk penggunaan sendiri. Furby adalah merek Hasbro; game &copy; Lemon Quest / pemilik IP masing-masing.
+    12 game tambahan dari proyek terbuka <b>J2ME 100 Games</b> oleh Agneay B Nair dan kontributor (lisensi MIT), dimuat apa adanya. Furby adalah merek Hasbro; Furby Island &copy; Lemon Quest. Koleksi pribadi untuk penggunaan sendiri.
   </div>
 </footer>
 
 <script>
-  if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
-    var b = document.getElementById("play-btn");
-    b.href = "run.html?app=furbyisland&mobile=1";
+  var coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  if (coarse) {
+    document.querySelectorAll(".play-link").forEach(function (a) {
+      a.href = a.getAttribute("href") + "&mobile=1";
+    });
   }
+
+  var activeGenre = "semua";
+  var query = "";
+  var sections = Array.prototype.slice.call(document.querySelectorAll("section.genre[data-genre]"));
+  var cards = Array.prototype.slice.call(document.querySelectorAll(".play-link"));
+  var emptyEl = document.getElementById("empty");
+
+  function applyFilter() {
+    var visibleTotal = 0;
+    cards.forEach(function (card) {
+      var hay = (card.getAttribute("data-name") + " " + card.getAttribute("data-genre") + " " + (card.getAttribute("data-desc") || "")).toLowerCase();
+      var okGenre = activeGenre === "semua" || card.getAttribute("data-genre") === activeGenre;
+      var okQuery = !query || hay.indexOf(query) !== -1;
+      var show = okGenre && okQuery;
+      card.style.display = show ? "" : "none";
+      if (show) visibleTotal++;
+    });
+    sections.forEach(function (sec) {
+      var any = Array.prototype.some.call(sec.querySelectorAll(".play-link"), function (c) {
+        return c.style.display !== "none";
+      });
+      sec.style.display = any ? "" : "none";
+    });
+    emptyEl.style.display = visibleTotal === 0 ? "block" : "none";
+  }
+
+  document.getElementById("chips").addEventListener("click", function (e) {
+    var btn = e.target.closest(".chip");
+    if (!btn) return;
+    activeGenre = btn.getAttribute("data-filter");
+    document.querySelectorAll(".chip").forEach(function (c) {
+      c.setAttribute("aria-pressed", c === btn ? "true" : "false");
+    });
+    applyFilter();
+  });
+
+  document.getElementById("search").addEventListener("input", function (e) {
+    query = e.target.value.trim().toLowerCase();
+    applyFilter();
+  });
 </script>
 </body>
 </html>
