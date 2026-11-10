@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vault Save, Game Java</title>
+<style>
+  :root{
+    --bg:#141210; --panel:#1e1a17; --panel-2:#262019; --line:#3a3128;
+    --text:#f3ead9; --muted:#b8a88f; --amber:#f0a13a; --amber-dark:#c67f1d;
+    --danger:#e07856;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:640px;margin:0 auto;padding:24px 20px 40px}
+  a.back{color:var(--muted);text-decoration:none;font-size:14px}
+  h1{font-size:22px;margin:14px 0 6px}
+  h1 em{font-style:normal;color:var(--amber)}
+  p.lead{color:#e7dcc4;font-size:14px;line-height:1.65;margin:0 0 20px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+  .panel h2{font-size:16px;margin:0 0 6px}
+  .panel p{font-size:13.5px;color:var(--muted);line-height:1.6;margin:0 0 12px}
+  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 5px}
+  input[type="password"],input[type="file"]{
+    width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
+    color:var(--text);padding:11px 12px;font-size:15px;min-height:44px;
+  }
+  .btn{
+    margin-top:14px;display:inline-block;cursor:pointer;border-radius:9px;padding:12px 18px;
+    font-size:15px;font-weight:700;border:1px solid var(--amber-dark);background:var(--amber);color:#221503;min-height:44px;
+  }
+  .btn[disabled]{opacity:.55;cursor:wait}
+  #status{font-size:14px;line-height:1.6;min-height:22px;margin-top:6px}
+  #status.err{color:var(--danger)}
+  #status.ok{color:#9ed08a}
+  .warn{font-size:12.5px;color:var(--muted);line-height:1.6}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">&larr; Kembali ke koleksi</a>
+  <h1>Vault <em>Save</em></h1>
+  <p class="lead">Pola yang sama seperti nfsu2.xyz: save utama tersimpan otomatis di browser perangkat ini. Vault adalah salinan portabelnya, satu file terenkripsi passphrase, untuk cadangan atau pindah perangkat.</p>
+
+  <section class="panel">
+    <h2>Buat file vault (backup)</h2>
+    <p>Seluruh data emulator, termasuk save semua game, dibungkus dan dienkripsi dengan passphrase kamu. Passphrase tidak disimpan di mana pun.</p>
+    <label for="backup-pass">Passphrase</label>
+    <input type="password" id="backup-pass" autocomplete="new-password" placeholder="Minimal 6 karakter" />
+    <button class="btn" id="backup-btn">Unduh File Vault</button>
+  </section>
+
+  <section class="panel">
+    <h2>Pulihkan dari file vault</h2>
+    <p>Memulihkan akan <b>menimpa</b> seluruh data save yang ada di browser ini dengan isi file vault.</p>
+    <label for="restore-file">File vault (.vault)</label>
+    <input type="file" id="restore-file" accept=".vault,application/json" />
+    <label for="restore-pass">Passphrase file tersebut</label>
+    <input type="password" id="restore-pass" autocomplete="current-password" placeholder="Passphrase saat backup" />
+    <button class="btn" id="restore-btn">Pulihkan Save</button>
+  </section>
+
+  <div id="status" role="status"></div>
+  <p class="warn">Catatan: enkripsi memakai Web Crypto bawaan browser (PBKDF2 + AES-GCM 256). Lupa passphrase berarti file vault tidak bisa dibuka lagi, jadi simpan passphrase di tempat aman.</p>
+</main>
+
+<script src="https://cjrtnc.leaningtech.com/20260317_2978/loader.js"></script>
+<script type="module" src="src/vault.js"></script>
+</body>
+</html>
