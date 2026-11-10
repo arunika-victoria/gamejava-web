@@ -76,15 +76,16 @@
   }
   .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
   .card:active{transform:scale(.99)}
-  .art{height:128px;display:flex;align-items:center;justify-content:center;position:relative}
+  .art{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;position:relative}
   .art img{width:84px;height:84px;image-rendering:pixelated;filter:drop-shadow(0 6px 10px rgba(60,45,15,.25))}
   .art .gchip{
     position:absolute;top:10px;left:10px;background:rgba(255,255,255,.82);border-radius:999px;
     font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:3px 9px;color:var(--ink);
   }
   .card-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
-  .card h3{margin:0;font-size:17px;font-weight:800}
-  .card p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-2);flex:1}
+  .card h3{margin:0;font-size:16.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-2);flex:1;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:63px}
   .card .play{
     margin-top:8px;align-self:flex-start;background:var(--amber-fill);color:#221503;font-weight:800;font-size:14px;
     border-radius:999px;padding:8px 18px;border:1px solid #d98a1f;
@@ -121,7 +122,15 @@
   .zone{padding:28px 0 0}
   .zone h2{font-size:23px;margin:0 0 4px;font-weight:900}
   .zone p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.6}
-  .art.online{height:auto;aspect-ratio:4/3;padding:0;background:#14100b}
+  .pager{display:flex;gap:6px;justify-content:center;align-items:center;padding:20px 0 4px;flex-wrap:wrap}
+  .pager button{
+    border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;
+    font-size:14px;font-weight:700;border-radius:999px;min-width:42px;min-height:42px;padding:8px 13px;cursor:pointer;
+  }
+  .pager button[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .pager button:disabled{opacity:.38;cursor:default}
+  .pager .pinfo{font-size:13px;color:var(--ink-2);margin:0 6px}
+  .art.online{padding:0;background:#14100b}
   .art.online img.thumb{width:100%;height:100%;object-fit:cover;image-rendering:auto;filter:none}
   .art .ochip{
     position:absolute;top:10px;right:10px;background:var(--ink);color:#fff;border-radius:999px;
@@ -158,7 +167,6 @@
 
   @media (max-width:680px){
     .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-    .art{height:104px}
     .art img{width:64px;height:64px}
     .featured{flex-direction:column}
     .featured .cover{flex:none;height:210px}
@@ -376,6 +384,7 @@
   <section class="genre" id="gridView" style="display:none">
     <div class="genre-head"><h2>Semua Game</h2><span id="gridCount"></span></div>
     <div class="grid dense" id="allGrid"></div>
+    <nav class="pager" id="pager" aria-label="Halaman katalog"></nav>
   </section>
 
   <div class="empty" id="empty">Tidak ada game yang cocok dengan pencarian itu. Coba kata lain, mis. &ldquo;ular&rdquo;, &ldquo;catur&rdquo;, atau &ldquo;balap&rdquo;.</div>
@@ -547,14 +556,50 @@
     return okGenre && okQuery;
   }
 
+  var PAGE_SIZE = 24;
+  var gridPage = 1;
+
+  function renderPager(totalPages) {
+    var pager = document.getElementById("pager");
+    pager.innerHTML = "";
+    if (viewMode !== "grid" || totalPages <= 1) return;
+    function addBtn(label, page, opts) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      if (opts && opts.current) b.setAttribute("aria-current", "page");
+      if (opts && opts.disabled) b.disabled = true;
+      b.addEventListener("click", function () {
+        gridPage = page;
+        applyFilter();
+        document.getElementById("gridView").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      pager.appendChild(b);
+    }
+    addBtn("‹ Prev", gridPage - 1, { disabled: gridPage <= 1 });
+    for (var i = 1; i <= totalPages; i++) {
+      addBtn(String(i), i, { current: i === gridPage });
+    }
+    addBtn("Next ›", gridPage + 1, { disabled: gridPage >= totalPages });
+    var info = document.createElement("span");
+    info.className = "pinfo";
+    info.textContent = "Halaman " + gridPage + " dari " + totalPages;
+    pager.appendChild(info);
+  }
+
   function applyFilter() {
     var visibleTotal = 0;
     if (viewMode === "grid") {
+      var matched = gridCards.filter(cardMatches);
+      var totalPages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
+      if (gridPage > totalPages) gridPage = totalPages;
+      var start = (gridPage - 1) * PAGE_SIZE;
+      var onPage = matched.slice(start, start + PAGE_SIZE);
       gridCards.forEach(function (card) {
-        var show = cardMatches(card);
-        card.style.display = show ? "" : "none";
-        if (show) visibleTotal++;
+        card.style.display = onPage.indexOf(card) !== -1 ? "" : "none";
       });
+      visibleTotal = matched.length;
+      renderPager(totalPages);
     } else {
       groupedCards.forEach(function (card) {
         var show = cardMatches(card);
@@ -579,6 +624,7 @@
 
   function setView(mode) {
     viewMode = mode;
+    gridPage = 1;
     document.getElementById("groupedView").style.display = mode === "grouped" ? "" : "none";
     document.getElementById("gridView").style.display = mode === "grid" ? "" : "none";
     document.getElementById("viewGrouped").setAttribute("aria-pressed", mode === "grouped" ? "true" : "false");
@@ -592,6 +638,7 @@
     var btn = e.target.closest(".chip");
     if (!btn) return;
     activeGenre = btn.getAttribute("data-filter");
+    gridPage = 1;
     document.querySelectorAll(".chip").forEach(function (c) {
       c.setAttribute("aria-pressed", c === btn ? "true" : "false");
     });
@@ -600,6 +647,7 @@
 
   document.getElementById("search").addEventListener("input", function (e) {
     query = e.target.value.trim().toLowerCase();
+    gridPage = 1;
     applyFilter();
   });
 </script>
